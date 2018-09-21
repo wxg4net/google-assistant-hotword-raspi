@@ -1,4 +1,6 @@
-import snowboydecoder
+#!/usr/bin/python3
+
+from snowboy import snowboydecoder
 import sys
 import signal
 import time
@@ -29,14 +31,15 @@ model = sys.argv[1]
 # capture SIGINT signal, e.g., Ctrl+C
 signal.signal(signal.SIGINT, signal_handler)
 
-detector = snowboydecoder.HotwordDetector(model, sensitivity=0.5)
+detector = snowboydecoder.HotwordDetector(model, sensitivity=0.5, audio_gain=10)
 assistant = Assistant()
 
 
 def detect_callback():
     detector.terminate()
     snowboydecoder.play_audio_file(snowboydecoder.DETECT_DING)
-    assistant.assist()
+    assistant.assist(language_code="en-US",
+                     device_model_id="homepi-23a12-homepi-md8k8x")
     snowboydecoder.play_audio_file(snowboydecoder.DETECT_DONG)
     detector.start(detected_callback=detect_callback, interrupt_check=interrupt_callback, sleep_time=0.03)
 

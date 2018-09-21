@@ -24,7 +24,7 @@ import google.auth.transport.grpc
 import google.auth.transport.requests
 import google.oauth2.credentials
 
-from google.assistant.embedded.v1alpha1 import embedded_assistant_pb2
+from google.assistant.embedded.v1alpha1 import embedded_assistant_pb2_grpc, embedded_assistant_pb2
 from google.rpc import code_pb2
 from tenacity import retry, stop_after_attempt, retry_if_exception
 
@@ -81,7 +81,7 @@ class Assistant():
         self.grpc_deadline = DEFAULT_GRPC_DEADLINE
 
         # Create Google Assistant API gRPC client.
-        self.assistant = embedded_assistant_pb2.EmbeddedAssistantStub(self.grpc_channel)
+        self.assistant = embedded_assistant_pb2_grpc.EmbeddedAssistantStub(self.grpc_channel)
 
         # Stores an opaque blob provided in ConverseResponse that,
         # when provided in a follow-up ConverseRequest,
@@ -133,7 +133,7 @@ class Assistant():
 
                 def iter_converse_requests():
                     for c in self.gen_converse_requests():
-                        assistant_helpers.log_converse_request_without_audio(c)
+                        assistant_helpers.log_assist_request_without_audio(c)
                         yield c
                     self.conversation_stream.start_playback()
 
@@ -141,7 +141,7 @@ class Assistant():
                 # received from the gRPC Google Assistant API.
                 for resp in self.assistant.Converse(iter_converse_requests(),
                                                     self.grpc_deadline):
-                    assistant_helpers.log_converse_response_without_audio(resp)
+                    assistant_helpers.log_assist_response_without_audio(resp)
                     if resp.error.code != code_pb2.OK:
                         self.logger.error('server error: %s', resp.error.message)
                         break
@@ -187,7 +187,7 @@ class Assistant():
 
         self.logger.info('Connecting to %s', self.api_endpoint)
         # Create Google Assistant API gRPC client.
-        self.assistant = embedded_assistant_pb2.EmbeddedAssistantStub(grpc_channel)
+        self.assistant = embedded_assistant_pb2_grpc.EmbeddedAssistantStub(grpc_channel)
 
     def is_grpc_error_unavailable(e):
         is_grpc_error = isinstance(e, grpc.RpcError)
