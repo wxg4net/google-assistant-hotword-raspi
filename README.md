@@ -1,3 +1,4 @@
+# fixed this repo on archlinuxarm with python-snowboy
 # google-assistant-hotword-raspi
 Simple Google Assistant with hotword activation from Snowboy setup for RaspberryPi 1 and Zero W.
 
