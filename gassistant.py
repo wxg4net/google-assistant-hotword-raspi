@@ -38,8 +38,7 @@ assistant = Assistant()
 def detect_callback():
     detector.terminate()
     snowboydecoder.play_audio_file(snowboydecoder.DETECT_DING)
-    assistant.assist(language_code="en-US",
-                     device_model_id="homepi-23a12-homepi-md8k8x")
+    assistant.assist()
     snowboydecoder.play_audio_file(snowboydecoder.DETECT_DONG)
     detector.start(detected_callback=detect_callback, interrupt_check=interrupt_callback, sleep_time=0.03)
 
