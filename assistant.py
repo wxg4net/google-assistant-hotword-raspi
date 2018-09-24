@@ -14,6 +14,7 @@
 
 """Sample that implements gRPC client for Google Assistant API."""
 
+from snowboy import snowboydecoder
 import json
 import logging
 import os.path
@@ -27,6 +28,8 @@ import google.oauth2.credentials
 from google.assistant.embedded.v1alpha1 import embedded_assistant_pb2_grpc, embedded_assistant_pb2
 from google.rpc import code_pb2
 from tenacity import retry, stop_after_attempt, retry_if_exception
+
+from actions import text_run
 
 try:
     from googlesamples.assistant.grpc import (
@@ -151,6 +154,11 @@ class Assistant():
                     if resp.result.spoken_request_text:
                         self.logger.info('Transcript of user request: "%s".',
                                      resp.result.spoken_request_text)
+                        srtxt = resp.result.spoken_request_text
+                        if text_run(srtxt):
+                            self.logger.info('Got commnad and run from follow text')
+                            self.conversation_stream.stop_playback()
+                            break
                         self.logger.info('Playing assistant response.')
                     if len(resp.audio_out.audio_data) > 0:
                         self.conversation_stream.write(resp.audio_out.audio_data)
@@ -170,6 +178,7 @@ class Assistant():
                 self.logger.info('Finished playing assistant response.')
                 self.conversation_stream.stop_playback()
         except Exception as e:
+            snowboydecoder.play_audio_file(snowboydecoder.DETECT_DING)
             self._create_assistant()
             self.logger.exception('Skipping because of connection reset')
             restart = True

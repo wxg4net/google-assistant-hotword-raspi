@@ -31,7 +31,7 @@ model = sys.argv[1]
 # capture SIGINT signal, e.g., Ctrl+C
 signal.signal(signal.SIGINT, signal_handler)
 
-detector = snowboydecoder.HotwordDetector(model, sensitivity=0.5, audio_gain=10)
+detector = snowboydecoder.HotwordDetector(model, sensitivity=0.5, audio_gain=1)
 assistant = Assistant()
 
 
